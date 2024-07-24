@@ -2,7 +2,7 @@
 
 This is a Proof of concept to showcase the use of the `jwt-library` in the API routes of a Next.js project.
 
-The API routes are located in the `api` directory. The `jwt-library` is used to create and verify JWT tokens.
+The API routes are located in the `pages/api` directory. The `jwt-library` is used to create and verify JWT tokens.
 
 ## Getting Started
 
