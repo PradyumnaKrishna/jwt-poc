@@ -1,10 +1,22 @@
 import * as utils from './utils';
 
+interface jwtPayload {
+  [key: string]: any;
+  iss?: string;
+  aud?: string;
+  sub?: string;
+  exp?: number;
+  nbf?: number;
+  iat?: number;
+  jti?: string;
+}
+
 export function encode_jwt(
   secret: string,
   id: string | number,
-  payload: any,
-  ttl: number = 3600
+  payload: object,
+  ttl: number = 3600,
+  options: { [key: string]: any } = {}
 ): string {
   const header = {
     alg: 'HS256',
@@ -15,9 +27,37 @@ export function encode_jwt(
   const iat = Math.floor(Date.now() / 1000);
   const exp = iat + ttl;
 
+  // Creates the JWT payload
+  const _payload: jwtPayload = {
+    id,
+    ...payload,
+    iat,
+    exp,
+  };
+
+  if (options.nbf) {
+    _payload.nbf = options.nbf;
+  }
+
+  if (options.iss) {
+    _payload.iss = options.iss;
+  }
+
+  if (options.aud) {
+    _payload.aud = options.aud;
+  }
+
+  if (options.sub) {
+    _payload.sub = options.sub;
+  }
+
+  if (options.jti) {
+    _payload.jti = options.jti;
+  }
+
   // Encodes the header and payload into Base64
   const encodedHeader = utils.b64UrlEncode(JSON.stringify(header));
-  const encodedPayload = utils.b64UrlEncode(JSON.stringify({ id, payload, exp, iat }));
+  const encodedPayload = utils.b64UrlEncode(JSON.stringify(_payload));
 
   // Creates the signature
   const signature = utils.createSignature(encodedHeader, encodedPayload, secret);
@@ -26,10 +66,7 @@ export function encode_jwt(
   return `${encodedHeader}.${encodedPayload}.${signature}`;
 }
 
-export function decode_jwt(
-  secret: string,
-  token: string
-): { id: string; payload: any; expiresAt: Date } {
+export function decode_jwt(secret: string, token: string): jwtPayload {
   try {
     // Splits the token into header, payload, and signature
     const [encodedHeader, encodedPayload, signature] = token.split('.');
@@ -43,11 +80,8 @@ export function decode_jwt(
       throw new Error('Invalid signature');
     }
 
-    // converts the expiration time to a Date object
-    const expiresAt = new Date(payload.exp * 1000);
-
     // Returns the decoded payload
-    return { id: payload.id, payload: payload.payload, expiresAt };
+    return payload;
   } catch (error) {
     throw error;
   }
@@ -55,10 +89,15 @@ export function decode_jwt(
 
 export function validate_jwt(secret: string, token: string): boolean {
   try {
-    // Decodes the token and checks if it has expired
-    const current_time = new Date();
+    // Decodes the token
+    const current_time = Math.floor(Date.now() / 1000);
     const payload = decode_jwt(secret, token);
-    if (payload.expiresAt < current_time) {
+
+    // Validates the token expiration and not before time
+    if (payload.exp && payload.exp < current_time) {
+      return false;
+    }
+    if (payload.nbf && payload.nbf > current_time) {
       return false;
     }
     return true;

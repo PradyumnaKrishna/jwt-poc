@@ -19,7 +19,7 @@ describe('JWT Library', () => {
     const decoded = decode_jwt(secret, jwt);
     expect(decoded).toBeDefined();
     expect(decoded.id).toBe(id);
-    expect(decoded.payload).toEqual(payload);
+    expect(decoded).toMatchObject(payload);
   });
 
   test('validate_jwt should return true for a valid JWT', () => {
@@ -34,7 +34,7 @@ describe('JWT Library', () => {
   });
 
   test('validate_jwt should return false for expired JWT', () => {
-    const expiredJwt = encode_jwt(secret, id, payload, 0);
+    const expiredJwt = encode_jwt(secret, id, payload, -1);
     const isValid = validate_jwt(secret, expiredJwt);
     expect(isValid).toBe(false);
   });

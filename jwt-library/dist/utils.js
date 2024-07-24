@@ -27,7 +27,6 @@ function b64UrlDecode(base64) {
 }
 function createSignature(header, payload, secret) {
     const signatureInput = `${header}.${payload}`;
-    const signature = crypto.createHmac('sha256', secret)
-        .update(signatureInput).digest('base64');
+    const signature = crypto.createHmac('sha256', secret).update(signatureInput).digest('base64');
     return encodeUrlsafe(signature);
 }
