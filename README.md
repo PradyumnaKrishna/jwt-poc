@@ -2,6 +2,14 @@
 
 This project is a proof of concept (POC) for JSON Web Tokens (JWT). It consists of an NPM package called [JWT library](jwt-library), which provides functionality for generating and validating JWT tokens. Additionally, there is a [Next.js app](jwt-api) that serves as an example of how to use the JWT library's API to generate and validate tokens.
 
+## Tasks
+
+- [x] Create a type-safe library (npm package) that provides methods for encoding, decoding, and validating JWT tokens.
+- [x] Add `encode_jwt`, `decode_jwt`, and `validate_jwt` functions to the library.
+- [x] Write tests for the library functions.
+- [x] Support Aditional Claims in the JWT payload.
+- [x] Create a Next.js app that uses the JWT library.
+- [x] Secure the API routes using JWT tokens.
 
 ## How JWT Works?
 
