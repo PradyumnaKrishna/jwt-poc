@@ -3,6 +3,7 @@
 This is a Proof of concept to showcase the use of the `jwt-library` in the API routes of a Next.js project.
 
 The API routes are located in the `pages/api` directory. The `jwt-library` is used to create and verify JWT tokens.
+The API route is secured using a middleware (`middleware.ts`) that validates the JWT token before allowing access to the route.
 
 ## Getting Started
 
@@ -123,7 +124,7 @@ Response:
 - **Description**: A secure endpoint that requires a valid JWT token to access. The token is validated using the `decode_jwt` method of the `jwt-library`.
 - **Request**: The request should contain the JWT token in the `Authorization` header.
   - `Authorization: Bearer <token>`
-- **Response**: A JSON object containing the info details extracted from the token.
+- **Response**: A JSON object containing the some info.
 - **Status Codes**:
   - `200`: The token was valid and the info was extracted.
   - `401`: The token was invalid or missing.
@@ -140,11 +141,6 @@ Accept: application/json
 
 Response:
 {
-   "info": {
-      "id": 1,
-      "user": "test-user",
-      "iat": <issued-at-time>,
-      "exp": <expiry-time>
-   }
+   "info": "Success!"
 }
 ```

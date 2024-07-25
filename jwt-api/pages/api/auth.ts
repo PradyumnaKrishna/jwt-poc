@@ -17,7 +17,7 @@ type ErrorResponse = {
   details?: string;
 };
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData | ErrorResponse>
 ) {
@@ -33,7 +33,7 @@ export default function handler(
     }
     const ttl = data.ttl || 3600;
     const expiresAt = new Date(Date.now() + ttl * 1000);
-    const token = jwt.encode_jwt(secret, randomInt(1000), { name: data.user }, data.ttl);
+    const token = await jwt.encode_jwt(secret, randomInt(1000), { name: data.user }, data.ttl);
     res.status(200).json({ token, expiresAt });
   } else {
     res.status(405).json({ error: 'Method Not Allowed' });
