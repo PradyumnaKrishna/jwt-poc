@@ -1,6 +1,6 @@
 # JWT Library
 
-This library provides methods for encoding, decoding, and validating JSON Web Tokens (JWTs).
+This library provides methods for encoding, decoding, and validating JSON Web Tokens (JWTs). It utilizes the [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) for cryptographic operations, like create HMAC signatures.
 
 ## Usage
 

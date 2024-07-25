@@ -1,5 +1,3 @@
-import * as crypto from 'crypto';
-
 function encodeUrlsafe(base64: string): string {
   return base64
     .replace(/\+/g, '-') // Convert '+' to '-'
@@ -25,8 +23,22 @@ export function b64UrlDecode(base64: string): string {
   return atob(decodeUrlsafe(base64));
 }
 
-export function createSignature(header: string, payload: string, secret: string): string {
+export async function createSignature(
+  header: string,
+  payload: string,
+  secret: string
+): Promise<string> {
   const signatureInput = `${header}.${payload}`;
-  const signature = crypto.createHmac('sha256', secret).update(signatureInput).digest('base64');
-  return encodeUrlsafe(signature);
+  const encoder = new TextEncoder();
+  const data = encoder.encode(signatureInput);
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signatureBuffer = await crypto.subtle.sign('HMAC', key, data);
+  const signature = b64UrlEncode(String.fromCharCode(...new Uint8Array(signatureBuffer)));
+  return signature;
 }

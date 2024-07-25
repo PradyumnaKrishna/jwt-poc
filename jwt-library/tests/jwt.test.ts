@@ -9,33 +9,33 @@ describe('JWT Library', () => {
 
   let jwt: string;
 
-  test('encode_jwt should return a JWT string', () => {
-    jwt = encode_jwt(secret, id, payload, ttl);
+  test('encode_jwt should return a JWT string', async () => {
+    jwt = await encode_jwt(secret, id, payload, ttl);
     expect(jwt).toBeDefined();
     expect(typeof jwt).toBe('string');
   });
 
-  test('decode_jwt should return the correct payload', () => {
-    const decoded = decode_jwt(secret, jwt);
+  test('decode_jwt should return the correct payload', async () => {
+    const decoded = await decode_jwt(secret, jwt);
     expect(decoded).toBeDefined();
     expect(decoded.id).toBe(id);
     expect(decoded).toMatchObject(payload);
   });
 
-  test('validate_jwt should return true for a valid JWT', () => {
-    const isValid = validate_jwt(secret, jwt);
+  test('validate_jwt should return true for a valid JWT', async () => {
+    const isValid = await validate_jwt(secret, jwt);
     expect(isValid).toBe(true);
   });
 
-  test('validate_jwt should return false for an invalid JWT', () => {
+  test('validate_jwt should return false for an invalid JWT', async () => {
     const invalidJwt = jwt + 'tampering';
-    const isValid = validate_jwt(secret, invalidJwt);
+    const isValid = await validate_jwt(secret, invalidJwt);
     expect(isValid).toBe(false);
   });
 
-  test('validate_jwt should return false for expired JWT', () => {
-    const expiredJwt = encode_jwt(secret, id, payload, -1);
-    const isValid = validate_jwt(secret, expiredJwt);
+  test('validate_jwt should return false for expired JWT', async () => {
+    const expiredJwt = await encode_jwt(secret, id, payload, -1);
+    const isValid = await validate_jwt(secret, expiredJwt);
     expect(isValid).toBe(false);
   });
 });

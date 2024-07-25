@@ -11,13 +11,13 @@ interface jwtPayload {
   jti?: string;
 }
 
-export function encode_jwt(
+export async function encode_jwt(
   secret: string,
   id: string | number,
   payload: object,
   ttl: number = 3600,
   options: { [key: string]: any } = {}
-): string {
+): Promise<string> {
   const header = {
     alg: 'HS256',
     typ: 'JWT',
@@ -60,20 +60,20 @@ export function encode_jwt(
   const encodedPayload = utils.b64UrlEncode(JSON.stringify(_payload));
 
   // Creates the signature
-  const signature = utils.createSignature(encodedHeader, encodedPayload, secret);
+  const signature = await utils.createSignature(encodedHeader, encodedPayload, secret);
 
   // Returns the JWT token
   return `${encodedHeader}.${encodedPayload}.${signature}`;
 }
 
-export function decode_jwt(secret: string, token: string): jwtPayload {
+export async function decode_jwt(secret: string, token: string): Promise<jwtPayload> {
   try {
     // Splits the token into header, payload, and signature
     const [encodedHeader, encodedPayload, signature] = token.split('.');
 
     // Decodes the header and payload
     const payload = JSON.parse(utils.b64UrlDecode(encodedPayload));
-    const expectedSignature = utils.createSignature(encodedHeader, encodedPayload, secret);
+    const expectedSignature = await utils.createSignature(encodedHeader, encodedPayload, secret);
 
     // Validates the signature
     if (signature !== expectedSignature) {
@@ -87,11 +87,11 @@ export function decode_jwt(secret: string, token: string): jwtPayload {
   }
 }
 
-export function validate_jwt(secret: string, token: string): boolean {
+export async function validate_jwt(secret: string, token: string): Promise<boolean> {
   try {
     // Decodes the token
     const current_time = Math.floor(Date.now() / 1000);
-    const payload = decode_jwt(secret, token);
+    const payload = await decode_jwt(secret, token);
 
     // Validates the token expiration and not before time
     if (payload.exp && payload.exp < current_time) {
